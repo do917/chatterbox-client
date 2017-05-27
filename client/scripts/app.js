@@ -4,10 +4,10 @@ var app = {};
 
 app.init = function() {
   this.server = 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages';
-  setInterval(this.fetch, 1000);
+  // setInterval(this.fetch, 1000);
+  this.fetch()
   this.friends = []
   this.userName = app.findUsername();
-  // this.fetch();
   this.handleUsernameClick();
   this.handleSubmit();
 };
@@ -34,11 +34,12 @@ app.fetch = function() {
     // This is the url you should use to communicate with the parse API server.
     url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
     type: 'GET',
+    data : 'order=-createdAt',
     success: function (data) {
       console.log('chatterbox: Message received');
       app.clearMessages();
-      for (var i = data.results.length -1; i > 0; i--) {
-        app.renderMessage(data.results[i]);
+      for (var i = 0; i < 10; i++) {
+          app.renderMessage(data.results[i]);
       }  
     },
     error: function (data) {
@@ -55,9 +56,12 @@ app.clearMessages = function() {
 };
 
 app.renderMessage = function(message) {
-  var textMessage = message.text;
-  var username = message.username;
-  $('#chats').append(`<ul class="username">${username}:<br>${textMessage}</ul>`);
+  // if (message !== undefined) {
+    // console.log('entered here');
+    var textMessage = message.text;
+    var username = message.username;
+    $('#chats').append(`<div class="messagebox"><ul class="username"><b>${username}:</b><br>${textMessage}</ul></div>`);
+  // };
 };
 
 app.renderRoom = function(roomName) {
@@ -72,15 +76,16 @@ app.handleUsernameClick = function() {
 
 app.handleSubmit = function() {
   $('.submit').click(function() {
-    var textMessage = $('.message').val()
+    var textMessage = $('.message').val();
 
     var message = {
       username: app.userName,
       text: textMessage,
       roomname: 'lobby'
-    };
+    }
 
     app.send(message);
+    app.fetch();
     return false;
   });
 };

@@ -67,6 +67,7 @@ form input[type=text] {
 
 .chat .username {
     font-weight: 800;
+
 }
 
 .chat:hover {
@@ -88,3 +89,9 @@ form input[type=text] {
     background-color: #0090da;
 }
 
+.messagebox {
+    background-color: #EAEAEA;
+    height: ;
+    margin: 25px;
+
+}
