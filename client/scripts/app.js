@@ -5,11 +5,13 @@ var app = {};
 app.init = function() {
   this.server = 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages';
   // setInterval(this.fetch, 1000);
-  this.fetch()
-  this.friends = []
+  this.fetch();
+  this.friends = [];
   this.userName = app.findUsername();
+  this.roomList = [];
   this.handleUsernameClick();
   this.handleSubmit();
+  
 };
 
 app.send = function(message) {
@@ -35,11 +37,15 @@ app.fetch = function() {
     url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
     type: 'GET',
     data : 'order=-createdAt',
+    
     success: function (data) {
       console.log('chatterbox: Message received');
       app.clearMessages();
       for (var i = 0; i < 10; i++) {
-          app.renderMessage(data.results[i]);
+        app.renderMessage(data.results[i]);
+        // app.roomList.push(data.results[i].roomname);
+        app.renderRoom(data.results[i].roomname);
+        // console.log(data.results[i].roomname);
       }  
     },
     error: function (data) {
@@ -49,23 +55,18 @@ app.fetch = function() {
   });
 };
 
-
-
 app.clearMessages = function() {
   $('#chats').children().remove();
 };
 
-app.renderMessage = function(message) {
-  // if (message !== undefined) {
-    // console.log('entered here');
-    var textMessage = message.text;
-    var username = message.username;
-    $('#chats').append(`<div class="messagebox"><ul class="username"><b>${username}:</b><br>${textMessage}</ul></div>`);
-  // };
+app.renderMessage = function(message) {  
+  var textMessage = message.text;
+  var username = message.username;
+  $('#chats').append(`<div class="messagebox"><ul class="username"><b>${username}:</b><br>${textMessage}</ul></div>`);
 };
 
-app.renderRoom = function(roomName) {
-  $('#roomSelect').append(`<option class="room">${roomName}</option>`);
+app.renderRoom = function(roomList) {
+  $('#roomSelect').append(`<option class="room">${roomList}</option>`);
 };
 
 app.handleUsernameClick = function() {
@@ -81,8 +82,8 @@ app.handleSubmit = function() {
     var message = {
       username: app.userName,
       text: textMessage,
-      roomname: 'lobby'
-    }
+      roomname: 'secretLobby' 
+    };
 
     app.send(message);
     app.fetch();
@@ -90,10 +91,11 @@ app.handleSubmit = function() {
   });
 };
 
+
 app.findUsername = function() {
   var url = window.location.href;
   return url.slice(url.indexOf('username=') + 9);
-}
+};
 
 $(document).ready(function() {
   app.init();
