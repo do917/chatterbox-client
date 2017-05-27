@@ -4,6 +4,9 @@ var app = {};
 
 app.init = function() {
   this.server = 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages';
+  setInterval(this.fetch, 100);
+  // app.fetch();
+  this.handleSubmit();
   this.handleUsernameClick();
   this.friends = [];
 };
@@ -29,11 +32,14 @@ app.fetch = function() {
   $.ajax({
     // This is the url you should use to communicate with the parse API server.
     url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
-    type: 'POST',
-    // data: JSON.stringify(message),
-    contentType: 'application/json',
+    type: 'GET',
+
     success: function (data) {
       console.log('chatterbox: Message received');
+      app.clearMessages();
+      for (var i = 0; i < 10; i++) {
+        app.renderMessage(data.results[i]);
+      }  
     },
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -42,31 +48,40 @@ app.fetch = function() {
   });
 };
 
+
+
 app.clearMessages = function() {
-  var allChats = $('#chats').children();
-  for (var i = 0; i < allChats.length; i++) {
-    allChats[i].remove();
-  }
-  // _.every(allChats, chat => chat.remove());
+  $('#chats').children().remove();
 };
 
 app.renderMessage = function(message) {
   var textMessage = message.text;
   var username = message.username;
-  // $('#main').append(`<div id='username'></div>`);
-  $('#chats').append(`<ol class="username" class="${username}">${username}:\n${textMessage}</ol>`);
+  $('#chats').append(`<ul class="username">${username}:<br>${textMessage}</ul>`);
 };
 
+// app.renderPerTime = function() {
+//   setInterval(function() {
+//     app.fetch.bind(this, message);
+//   }, 10);
+// };
+
 app.renderRoom = function(roomName) {
-  $('#roomSelect').append(`<ul>${roomName}</ul>`);
+  $('#roomSelect').append(`<option class="room">${roomName}</option>`);
 };
 
 app.handleUsernameClick = function() {
-  $('.username').click(function() {
-    console.log('WOOT');
-    this.friends.push.bind(this, 'asdf');
+  $('.username').on('click', function() {
+    console.log('BOO');
   });
 };
 
-// server
-// underscore not working
+app.handleSubmit = function() {
+  $('.username').click(function() {
+    //NEED TO FILL IN
+  });
+};
+
+$(document).ready(function() {
+  app.init();
+});
